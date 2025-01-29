@@ -1,0 +1,27 @@
+import pandas as pd
+
+# Load the dataset
+file_path = '/content/sample_data/hiv-aids-1984-to-2022-eng.csv'
+df = pd.read_csv(file_path)
+
+table_name = 'Aids'
+
+# Create a list to store SQL statements
+sql_statements = []
+
+# Generate SQL INSERT statements and store them in the list
+for index, row in df.iterrows():
+    columns = ', '.join(row.index)
+    # Escape single quotes by doubling them up
+    escaped_values = [str(x).replace("'", "''") for x in row.values]
+    values = ', '.join([f"'{value}'" for value in escaped_values])
+    sql = f"INSERT INTO {table_name} ({columns}) VALUES ({values});"
+    sql_statements.append(sql)
+
+# Convert the list of SQL statements into a DataFrame
+sql_df = pd.DataFrame(sql_statements, columns=['SQL_Statement'])
+
+# Save the SQL statements to a CSV file
+sql_df.to_csv('sql_inserts.csv', index=False)
+
+print("SQL insert statements saved to 'sql_inserts.csv'.")
